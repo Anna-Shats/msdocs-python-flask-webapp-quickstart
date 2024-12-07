@@ -10,7 +10,8 @@ env:
   IMAGE_BASE_NAME: annaimage
   WEBAPP_NAME: annawebapp
   KEY_VAULT_NAME: annakvault                  # Replace with your Key Vault name
-
+  ACR_USERNAME_SECRET: adminUsernameSecretName
+  ACR_PASSWORD_SECRET: adminPasswordSecretName
 
 jobs:
   build-and-push:
@@ -28,12 +29,14 @@ jobs:
 
 
 
-    - name: 'Get docker registry credentials from Azure Key Vault'
+    - name: 'Get ACR credentials from Azure Key Vault'
       uses: azure/CLI@v1
       with:
         inlineScript: |
-         echo "REGISTRY_USERNAME=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_NAME_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)" >> $GITHUB_ENV
-         echo "REGISTRY_PASSWORD=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_NAME_ACR_PASSWORD }} --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)" >> $GITHUB_ENV
+          ACR_USERNAME=$(az keyvault secret show --name ${{ env.ACR_USERNAME_SECRET }} --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          ACR_PASSWORD=$(az keyvault secret show --name ${{ env.ACR_PASSWORD_SECRET }} --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "REGISTRY_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
+          echo "REGISTRY_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
 
     - name: Set image version
       id: image-version
