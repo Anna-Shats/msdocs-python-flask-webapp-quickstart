@@ -113,8 +113,6 @@ for (roleAssignment, index) in (roleAssignments ?? []): {
 }
 ]
 
-
-
 // Outputs
 @description('The resource ID of the key vault.')
 output resourceId string = keyVault.id
